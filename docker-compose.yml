@@ -1,0 +1,53 @@
+version: "3.8"
+
+services:
+  app:
+    build:
+      context: ./docker/php
+    container_name: contact-form-app
+    volumes:
+      - ./src:/var/www/html
+    working_dir: /var/www/html
+    ports:
+      - "9001:9000"
+    networks:
+      - contact-form-network
+    depends_on:
+      - db
+
+  nginx:
+    image: nginx:latest
+    container_name: contact-form-nginx
+    ports:
+      - "8081:80"
+    volumes:
+      - ./src:/var/www/html
+      - ./docker/nginx/default.conf:/etc/nginx/conf.d/default.conf
+    networks:
+      - contact-form-network
+    depends_on:
+      - app
+
+  db:
+    image: mysql:8.0
+    container_name: contact-form-db
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: contact_form
+      MYSQL_USER: user
+      MYSQL_PASSWORD: secret
+    ports:
+      - "3307:3306"
+    volumes:
+      - contact-form-db-data:/var/lib/mysql
+      - ./docker/mysql/my.cnf:/etc/mysql/conf.d/my.cnf
+    networks:
+      - contact-form-network
+
+volumes:
+  contact-form-db-data:
+
+networks:
+  contact-form-network:
+    name: contact-form-network
