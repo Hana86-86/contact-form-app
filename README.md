@@ -26,7 +26,7 @@ php artisan migrate --seed       # マイグレーション & シーディング
 ![ER図](./er-diagram.png)
 
 ## URL
-	•	開発環境：http://localhost:8081
+	•	開発環境：http://localhost:9001
 
 ----
 
