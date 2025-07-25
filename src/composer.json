@@ -14,6 +14,11 @@
     },
     "require-dev": {
         "fakerphp/faker": "^1.9.1",
+<<<<<<< HEAD
+=======
+        "laravel-lang/common": "^6.2",
+        "laravel-lang/lang": "^15.2",
+>>>>>>> 1f671e1 (初回コミット（再構築後）)
         "laravel/pint": "^1.0",
         "laravel/sail": "^1.18",
         "mockery/mockery": "^1.4.4",

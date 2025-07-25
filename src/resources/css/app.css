@@ -1,0 +1,9 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+.flatpickr-prev-month svg,
+.flatpickr-next-month svg {
+    width: 1rem;
+    height: 1rem;
+}
