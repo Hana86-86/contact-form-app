@@ -23,6 +23,10 @@ Route::get('/contact/thanks', function(){
     return view('contacts.thanks');
 })->name('contacts.thanks');
 
+Route::get('/admin', function () {
+    return view('admin.index');
+})->name('admin');
+
 Route::middleware(['auth'])->group(function () {
     Route::get('/admin', [ContactController::class,'index'])->name('admin.index');
     Route::delete('/admin/contacts/{id}',[ContactController::class, 'destroy'])->name('admin.contacts.destroy');

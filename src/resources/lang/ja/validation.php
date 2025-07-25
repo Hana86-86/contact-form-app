@@ -2,10 +2,18 @@
 
 declare(strict_types=1);
 
+
+
 return [
     'required' => ':attributeを入力してください。',
-    'email' => ':attributeはメール形式で入力してください。',
     'digits_between' => ':attributeは:min桁から:max桁の間で入力してください。',
+    
+    'email' => [
+        'required' => 'メールアドレスを入力してください。',
+        'email'    => 'メールアドレスは「ユーザー名@ドメイン」形式で入力してください。',
+        'unique'   => 'すでに登録されているメールアドレスです。',
+    ],
+
     'attributes' => [
         'email'                    => 'メールアドレス',
         'address'                  => '住所',

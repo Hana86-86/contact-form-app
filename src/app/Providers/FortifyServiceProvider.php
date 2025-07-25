@@ -3,6 +3,8 @@
 namespace App\Providers;
 
 use App\Models\User;
+use App\Http\Requests\RegisterRequest;
+use Illuminate\Support\Facades\App;
 use App\Actions\Fortify\CreateNewUser;
 use App\Actions\Fortify\ResetUserPassword;
 use App\Actions\Fortify\UpdateUserPassword;
@@ -16,6 +18,8 @@ use Illuminate\Support\Str;
 use Laravel\Fortify\Actions\RedirectIfTwoFactorAuthenticatable;
 use Laravel\Fortify\Fortify;
 use Laravel\Fortify\Contracts\LoginResponse;
+use Laravel\Fortify\Contracts\LogoutResponse;
+use App\Actions\Fortify\LogoutResponse as CustomLogoutResponse;
 
 
 class FortifyServiceProvider extends ServiceProvider
@@ -34,7 +38,9 @@ class FortifyServiceProvider extends ServiceProvider
                 }
             };
         });
-    }
+        // ログアウト後のリダイレクト先を /login にカスタマイズ
+        $this->app->singleton(LogoutResponse::class, CustomLogoutResponse::class);
+}
 
     /**
      * Bootstrap any application services.
@@ -46,6 +52,9 @@ class FortifyServiceProvider extends ServiceProvider
         Fortify::updateUserPasswordsUsing(UpdateUserPassword::class);
         Fortify::resetUserPasswordsUsing(ResetUserPassword::class);
         Fortify::redirectUserForTwoFactorAuthenticationUsing(RedirectIfTwoFactorAuthenticatable::class);
+
+
+        Fortify::createUsersUsing(CreateNewUser::class);
 
         RateLimiter::for('login', function (Request $request) {
             $throttleKey = Str::transliterate(Str::lower($request->input(Fortify::username())).'|'.$request->ip());
@@ -63,6 +72,9 @@ class FortifyServiceProvider extends ServiceProvider
         Fortify::loginView(function () {
         return view('auth.login');
     });
+
+       Fortify::redirects('register', '/admin');
+       Fortify::redirects('login', '/admin');
 
         Fortify::authenticateUsing(function (Request $request) {
     $request->validate([
