@@ -1,130 +1,189 @@
-# Contact Form App
-問い合わせフォームを管理者が操作できる Laravel アプリです。
+- Contact Form App
 
----
-## 環境構築　
-```bash
+管理者がユーザーからのお問い合わせを管理できる Laravel アプリケーションです。
+登録〜ログイン〜投稿〜検索〜CSV出力まで、一連のフローを学習・構築目的で実装しています。
+
+⸻
+
+- 環境構築手順
+
 git clone https://github.com/Hana86-86/contact-form-app
-docker compose up -d --build     # 初回起動
-docker compose exec app bash     # Laravelコンテナに入る
-cp .env.example .env             # .env設定
-php artisan key:generate         # キー生成
-php artisan migrate --seed       # マイグレーション & シーディング
+cd contact-form-app
+docker compose up -d --build
 
-----
+# Laravelコンテナに入る
+docker compose exec app bash
 
-## 使用技術
-	•	Laravel 8.x
+# Laravel初期設定
+cp .env.example .env
+php artisan key:generate
+php artisan migrate --seed
+
+- 使用技術
+	•	Laravel 10.x
 	•	PHP 8.x
 	•	MySQL
 	•	Docker / Docker Compose
-	•	Laravel Fortify（認証機能）
+	•	Laravel Fortify（ログイン認証）
+	•	Tailwind CSS（デザイン）
 	•	Seeder / Factory（ダミーデータ生成）
 
-----
+- 開発用URL
+	•	http://localhost:9001
+
 ## ER図
+
+## ER図
+
 ![ER図](./er-diagram.png)
 
-## URL
-	•	開発環境：http://localhost:9001
+⸻
 
-----
+- 機能一覧
 
-## 概要（登録ページ）
-	•	管理者画面にアクセスできる新規ユーザー作成
+🔐 ユーザー登録・ログイン（Fortify）
+	•	登録／ログイン画面を Fortify で構成
 	•	バリデーションには FormRequest を使用
-	•	ヘッダーの「login」ボタンクリックでログインページへ遷移
-	•	「登録」ボタンクリックでバリデーションエラーがあると各項目下に表示
+	•	日本語エラーメッセージ対応
+	•	入力エラー時は各項目下にメッセージ表示
 
-### バリデーションルール
-	•	すべてのフォームが入力必須
-- お名前を入力してください
-- メールアドレスを入力してください
-- パスワードを入力してください
+バリデーションルール例（register/login 共通）
+	•	メールアドレスは 必須 / メール形式
+	•	パスワードは 必須
+	•	すべての入力項目が必須
 
-	•	メールアドレスは ユーザー名@ドメイン 形式
-- メールアドレスは「ユーザー名@ドメイン」形式で入力してください
+⸻
 
-----
+- お問い合わせフォーム（入力 → 確認 → 完了）
+	•	姓・名を分割入力、性別・カテゴリ選択付き
+	•	バリデーションは FormRequest で実装
+	•	電話番号は「半角数字／ハイフンなし」
+	•	入力後は確認画面へ → 内容確認 → 送信でDB保存
 
-##　概要（ログインページ）
-	•	登録済みユーザーがログイン
-	•	バリデーションには FormRequest を使用
-	•	ヘッダーの「register」クリックで登録ページへ遷移
-	•	バリデーションエラーがあると各項目下に表示
-### バリデーションルール
-    . 全てのフォームは入力必須
+バリデーションルール例
+	•	必須項目：姓・名・性別・メール・電話・住所・カテゴリ・内容
+	•	メール形式、120文字以内、電話は半角数字
 
-- メールアドレスを入力してください
-- パスワードを入力してください
+⸻
 
-    .    メールアドレスは「ユーザー名@ドメイン」形式
+- 管理画面（検索・一覧・CSV）
+	•	フルネーム、性別、カテゴリ、日付で検索（部分一致対応）
+	•	カレンダー入力による日付指定
+	•	ページネーション（7件ずつ）
+	•	結果をCSV形式でエクスポート可能
+	•	検索リセットで全件表示に戻る
+	•	各行に「詳細」ボタン → モーダルで内容表示
 
-- メールアドレスは「ユーザー名@ドメイン」形式で入力してください
+⸻
 
-----
+- モーダルウィンドウ
+	•	「詳細」をクリックするとモーダルで内容表示
+	•	「×」で閉じる、「削除」でデータ削除
 
-## 概要（管理画面）	•	名前、メールアドレス、性別、カテゴリ、日付の検索（すべて OR 部分一致可）
-	•	性別は「全て／男性／女性／その他」で選択
-	•	日付はカレンダーで選択可能
-	•	7件ごとのページネーション
-	•	「リセット」ボタンで初期状態に戻す
-	•	「詳細」ボタンでモーダル表示
-	•	✅ 応用機能：
-	•	CSVエクスポート（検索結果に絞った状態も可能）
+⸻
 
----
+- ダミーデータ
+	•	Seeder & Factory 使用
+	•	contacts：35件自動生成
+	•	categories：
+	1.	商品のお届けについて
+	2.	商品の交換について
+	3.	商品のトラブル
+	4.	ショップへのお問い合わせ
+	5.	その他
 
-## モーダルウィンドウ
-	•	「詳細」はモーダルで表示
-	•	「削除」でデータ削除
-	•	「×」でモーダルを閉じる
+⸻
 
-## 機能概要（お問い合わせフォームの入力画面）
-	•	姓・名分割入力
-	•	性別：デフォルトで「男性」
-	•	カテゴリ：デフォルトで「選択してください」
-	•	「確認画面」ボタンで確認画面に遷移
-	•	バリデーション：FormRequest 使用
+- トラブルと解決策
 
-### バリデーションルール
-	•	※付きフォームはすべて必須
-- 姓を入力してください
-- 名を入力してください
-- 性別を選択してください
-- メールアドレスを入力してください
-- 電話番号を入力してください
-- 住所を入力してください
-- お問い合わせの種類を入力してください
-- お問い合わせ内容を入力してください
-- お問い合わせ内容の入力文字数は120文字以内してください
-- メールアドレスはメールアドレス形式
+❌ 日本語バリデーションが表示されない
+	•	原因：config/app.php で 'locale' => 'ja' にしても resources/lang/ja/validation.php が読み込まれていない
+	•	解決：
+	•	resources/lang/ja/validation.php を配置
 
-    ・メールアドレスはメール形式で入力してください
+❌ sessions テーブルが見つからないエラー
 
-- 電話番号は半角数字、ハイフンなし
-    ・電話番号は５桁までの数字で入力してください
-    ・お問い合わせ内容は120文字いないで入力してください
+SQLSTATE[42S02]: Base table or view not found: 1146 Table 'contact_form.sessions' doesn't exist
 
-## ダミーデータ作成
-	•	Factoryで contacts に35件生成
-	•	Seederで categories に5件生成：
-1.商品のお届けについて
-2.商品の交換について
-3.商品のトラブル
-4.ショップへのお問い合わせ
-5.その他
+	•	原因：.env に SESSION_DRIVER=database を設定しているが、セッション保存用テーブルが未作成
 
-## 機能概要（確認画面）
-	•	入力したデータを表示
-	•	姓と名の間にスペース挿入
-	•	性別：ラベルに変換（男性／女性／その他）
-	•	「修正」で入力画面へ戻る（値は保持）
-	•	「送信」で contacts テーブルへ保存 → サンクスページへ遷移
+	•	解決：
 
-## 機能概要（サンクスページ）
-	•	「HOME」ボタンでお問い合わせフォームへ戻る
+php artisan session:table
+php artisan migrate
 
+🗂 その他
+	•	Docker環境でのポートやマウントボリュームの設定は .env や docker-compose.yml に従う
+	•	phpMyAdmin などを併用する場合は別途ポート設定が必要
 
+❌ バリデーションエラーメッセージが表示されなかった原因と解決方法
 
+❓ 発生した現象
+	•	お問い合わせフォームに入力せず送信すると、**「このフィールドを入力してください」**というブラウザ標準のエラーが表示される。
+	•	Laravelで定義した日本語のエラーメッセージ（例：「メールアドレスを入力してください」）が表示されなかった。
 
+⸻
+
+- 原因
+	•	フォームの <input>, <select>, <textarea> に required 属性がついていた。
+	•	required 属性があると、Laravelにリクエストが送られる前にブラウザ側のHTMLバリデーションで送信がブロックされるため、Laravelのバリデーションが発動しなかった。
+
+⸻
+
+- 解決方法
+
+ 1. required 属性をすべて削除
+
+<!-- 修正前 -->
+<input type="text" name="email" required>
+
+<!-- 修正後 -->
+<input type="text" name="email">
+
+2. FormRequest クラスでルールとメッセージを定義
+// app/Http/Requests/ContactRequest.php
+```
+public function rules(): array
+{
+    return [
+        'email' => 'required|email',
+        'tel' => 'required|digits_between:10,11',
+        'address' => 'required|string',
+        'category_id' => 'required|in:1,2,3,4,5',
+        'detail' => 'required|string|max:2000',
+    ];
+}
+
+public function messages(): array
+{
+    return [
+        'email.required' => 'メールアドレスを入力してください',
+        'tel.required' => '電話番号を入力してください',
+        'address.required' => '住所を入力してください',
+        'category_id.required' => 'お問い合わせの種類を選択してください',
+        'detail.required' => 'お問い合わせ内容を入力してください',
+    ];
+}
+
+ 3. Bladeテンプレートでバリデーションエラーを表示
+{{-- フォーム上部で全体エラー一覧を表示 --}}
+@if ($errors->any())
+  <div class="bg-red-100 text-red-700 p-4 mb-6 rounded">
+      <ul>
+          @foreach ($errors->all() as $error)
+              <li>{{ $error }}</li>
+          @endforeach
+      </ul>
+  </div>
+@endif
+
+{{-- 各フィールド下に個別エラーメッセージ表示 --}}
+@error('email')
+  <p class="text-red-500 text-sm">{{ $message }}</p>
+@enderror
+
+- 結果
+	•	Laravelの FormRequest で定義した日本語のバリデーションメッセージが正しく表示されるようになった。
+	•	フォームの上部と各入力フィールド下に、ユーザーに優しいエラーメッセージが表示されるようになった。
+
+⸻
